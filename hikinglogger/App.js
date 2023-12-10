@@ -8,6 +8,7 @@ import {Marker} from 'react-native-maps';
 import {useWindowDimensions} from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import Geocoder from 'react-native-geocoding'
+import { Polyline } from 'react-native-maps';
 
 const styles = StyleSheet.create({
   container: {
@@ -62,6 +63,10 @@ const MapList = () => {
 
     const getItemCount = (data) => list.length;
     const getItem = (data, index) => (list[index]);
+
+    // add start and end markers
+    const [startMarker, setStartMarker] = useState(null);
+    const [endMarker, setEndMarker] = useState(null);
 
     useEffect(() => {
    
@@ -179,6 +184,59 @@ const MapList = () => {
 
     }
 
+    const [tempEndMarker, setTempEndMarker] = useState(null);
+    const [showHikeDialog, setShowHikeDialog] = useState(false);
+
+
+    const handleLongPress = (event) => {
+      const { latitude, longitude } = event.nativeEvent.coordinate;
+
+      // if no start marker, add one, otherwise add end marker
+      if (!startMarker) {
+        setStartMarker({ latitude, longitude });
+      } else if (!endMarker) {
+        setEndMarker({ latitude, longitude });
+        setShowHikeDialog(true); // Show hike name dialog
+      } else {
+        setStartMarker(null);
+        setEndMarker(null);
+        setShowHikeDialog(false);
+      }
+    };
+
+    const handleHikeNameSubmit = (hikeName) => {
+      if (startMarker && tempEndMarker) {
+        addHike(hikeName, startMarker, tempEndMarker);
+        setTempEndMarker(null); // Reset temporary end marker
+      }
+      setshowme(false);
+    };
+    
+    const addHike = (hikeName, start, end) => {
+      // Create a new hike object
+      const newHike = {
+        id: `${start.latitude}_${start.longitude}-${end.latitude}_${end.longitude}`, // Unique ID based on coordinates
+        name: hikeName, // Name of the hike
+        start: start, // Start marker coordinates
+        end: end, // End marker coordinates
+      };
+    
+      // Add the new hike to the hikes list
+      setHikes(currentHikes => [...currentHikes, newHike]);
+    };
+    
+
+  <DialogInput 
+    isDialogVisible={showHikeDialog}
+    title="Enter Hike Name"
+    submitInput={(inputText) => {
+      handleHikeNameSubmit(inputText);
+      setShowHikeDialog(false);
+    }}
+    closeDialog={() => setShowHikeDialog(false)}
+  />
+
+
    var buttonrow = <View style={styles.rowblock} >
               <View style={styles.buttonContainer}>
                <Button style={styles.item} title="+" onPress={() => plusButton()}  />
@@ -207,9 +265,37 @@ const MapList = () => {
     smaps = {width: SCREEN_WIDTH, height: SCREEN_HEIGHT}
 
   }
-  var mymap=<MapView ref={mapref} style={smaps} >
-             {markers} 
-            </MapView >
+  // updated MapView to handle long presses and render markers
+  var mymap = (
+    <MapView
+        ref={mapref}
+        style={smaps}
+        onLongPress={handleLongPress} 
+    >
+        {startMarker && (
+            <Marker
+                coordinate={startMarker}
+                title={"Start"}
+                pinColor={"green"} // green pin to indicate start
+            />
+        )}
+        {endMarker && (
+            <Marker
+                coordinate={endMarker}
+                title={"End"}
+                pinColor={"red"} // a red pin to indicate end
+            />
+        )}
+        {startMarker && endMarker && (
+            <Polyline
+                coordinates={[startMarker, endMarker]}
+                strokeColor={"#000"}
+                strokeWidth={6}
+            />
+        )}
+        {markers}
+    </MapView>
+  );
 
    var alist=<View style={styles.container} >
       {mymap}
