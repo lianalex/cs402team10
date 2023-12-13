@@ -1,11 +1,11 @@
 # CS402 TEAM10
-*****************************************************
+*****************************************************************
 * Project: Hikelogger
 * Class: CS402
 * Date: 12/13/2023
 * Names: Alex Liang, Abdullah Faizi, Tommy Trovinger, Sam Wilcox
-***************************************************** 
-## Project Title: Hikelogger
+*****************************************************************
+## Final Project Title: Hikinglogger
     An app that tracks your hiking location and other features for hiking.
 
 ## Overview
