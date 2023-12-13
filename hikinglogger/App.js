@@ -68,6 +68,8 @@ const MapList = () => {
     const [startMarker, setStartMarker] = useState(null);
     const [endMarker, setEndMarker] = useState(null);
 
+    const [hikePath, setHikePath] = useState([]);
+
     useEffect(() => {
    
       if (list.length == 0)
@@ -184,10 +186,6 @@ const MapList = () => {
 
     }
 
-    const [tempEndMarker, setTempEndMarker] = useState(null);
-    const [showHikeDialog, setShowHikeDialog] = useState(false);
-
-
     const handleLongPress = (event) => {
       const { latitude, longitude } = event.nativeEvent.coordinate;
 
@@ -196,46 +194,13 @@ const MapList = () => {
         setStartMarker({ latitude, longitude });
       } else if (!endMarker) {
         setEndMarker({ latitude, longitude });
-        setShowHikeDialog(true); // Show hike name dialog
       } else {
-        setStartMarker(null);
+        // both markers already exist, so clear them and add new start marker
+        setStartMarker({ latitude, longitude });
         setEndMarker(null);
-        setShowHikeDialog(false);
       }
     };
-
-    const handleHikeNameSubmit = (hikeName) => {
-      if (startMarker && tempEndMarker) {
-        addHike(hikeName, startMarker, tempEndMarker);
-        setTempEndMarker(null); // Reset temporary end marker
-      }
-      setshowme(false);
-    };
     
-    const addHike = (hikeName, start, end) => {
-      // Create a new hike object
-      const newHike = {
-        id: `${start.latitude}_${start.longitude}-${end.latitude}_${end.longitude}`, // Unique ID based on coordinates
-        name: hikeName, // Name of the hike
-        start: start, // Start marker coordinates
-        end: end, // End marker coordinates
-      };
-    
-      // Add the new hike to the hikes list
-      setHikes(currentHikes => [...currentHikes, newHike]);
-    };
-    
-
-  <DialogInput 
-    isDialogVisible={showHikeDialog}
-    title="Enter Hike Name"
-    submitInput={(inputText) => {
-      handleHikeNameSubmit(inputText);
-      setShowHikeDialog(false);
-    }}
-    closeDialog={() => setShowHikeDialog(false)}
-  />
-
 
    var buttonrow = <View style={styles.rowblock} >
               <View style={styles.buttonContainer}>
