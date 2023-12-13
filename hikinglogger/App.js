@@ -96,9 +96,7 @@ const MapList = () => {
        
 		.then(json => {
 			location = json.results[0].geometry.location;
-			console.log(location);
-		    console.log(location);
-            var newList = [{key: alocation, description: "", selected: false, longitude: location.lng, latitude: location.lat }]
+            var newList = [{key: alocation, description: "description", selected: false, longitude: location.lng, latitude: location.lat }]
       var amark = <Marker
                         coordinate={{latitude: location.lat, longitude: location.lng}}
                                   title={alocation}
@@ -128,10 +126,14 @@ const MapList = () => {
         const backgroundColor = item.selected ? 'black' : 'white';
          const color = item.selected ? 'white' : 'black';
              return (
-      <Item item={item} onPress={() => {toggleList(index)}}
-        backgroundColor={{ backgroundColor }}
-        textColor={{ color }}
-      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, marginBottom: 10 }}>
+        <Item item={item} onPress={() => {toggleList(index)}}
+                delButton={delButton}
+                backgroundColor={{ backgroundColor }}
+                textColor={{ color }}
+              />
+      </View>
+      
     );
         };
 
