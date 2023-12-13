@@ -8,9 +8,10 @@ import {Marker} from 'react-native-maps';
 import {useWindowDimensions} from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import Geocoder from 'react-native-geocoding'
-import ImagePicker from 'react-native-image-picker';
+import { getDistance } from 'geolib';
 import ImagePicker from 'react-native-image-picker';
 import { Polyline } from 'react-native-maps';
+import axios from 'axios';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,6 +71,7 @@ const MapList = () => {
     const [waypoints, setWaypoints] = useState([]);
 
     const [mapType, setMapType] = useState('standard');
+    const [currentWeather, setCurrentWeather] = useState(null);
 
 
     useEffect(() => {
@@ -106,6 +108,7 @@ const MapList = () => {
 			location = json.results[0].geometry.location;
 			console.log(location);
 		    console.log(location);
+
             var newList = [{key: alocation, description: "", selected: false, longitude: location.lng, latitude: location.lat }]
       var amark = <Marker
                         coordinate={{latitude: location.lat, longitude: location.lng}}
@@ -143,35 +146,31 @@ const MapList = () => {
     );
         };
 
-    function toggleList(aindex){
-   
-      const newList = list.map((item,index) => {    
-
-        if (aindex == index)
-        {
-          if (item.selected)
-          {
+    function toggleList(aindex) {
+      const newList = list.map((item, index) => {
+        if (aindex === index) {
+          if (!item.selected) {
+            item.selected = true;
+            fetchWeatherData(item.latitude, item.longitude); 
+            if (autonav) {
+              mapref.current.animateToRegion({
+                latitude: item.latitude,
+                longitude: item.longitude,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1,
+              });
+            }
+          } else {
             item.selected = false;
           }
-          else
-          {
-            if (autonav)
-            {
-            console.log(item.latitude);
-            console.log(item.key);
-            mapref.current.animateToRegion({latitude: item.latitude, longitude: item.longitude, latitudeDelta: 0.1, longitudeDelta: 0.1});
-            }
-            item.selected = true;
-          }
-        }
-        else{
+        } else {
           item.selected = false;
         }
         return item;
-      })
+      });
       setlist(newList);
-
     }
+        
 
     const addWaypoint = (coordinate) => {
       setWaypoints(currentWaypoints => [...currentWaypoints, coordinate]);
@@ -180,6 +179,32 @@ const MapList = () => {
     const removeLastWaypoint = () => {
       setWaypoints(currentWaypoints => [...currentWaypoints.slice(0, -1)]);
     }
+
+    const calculateTotalDistance = () => {
+      let totalDistance = 0;
+      for (let i = 0; i < waypoints.length - 1; i++) {
+        totalDistance += getDistance(
+          { latitude: waypoints[i].latitude, longitude: waypoints[i].longitude },
+          { latitude: waypoints[i + 1].latitude, longitude: waypoints[i + 1].longitude }
+        );
+      }
+      return totalDistance;
+    };
+
+    const fetchWeatherData = async (latitude, longitude) => {
+      const apiKey = 'f343d437230cb3005ad46c6ff9e845b6';
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+      
+      try {
+        const response = await axios.get(url);
+        const weatherData = response.data;
+        setCurrentWeather(weatherData);
+        console.log(weatherData);
+      } catch (error) {
+        console.log(error);
+        setCurrentWeather(null);
+      }
+    };
 
     const handleLongPress = (event) => {
       const { latitude, longitude } = event.nativeEvent.coordinate;
@@ -252,10 +277,16 @@ const MapList = () => {
   );
 
   var alist=<View style={styles.container} >
+        {currentWeather && (
+      <Text>Current Temperature: {currentWeather.main.temp}°C</Text>
+    )}
     {mymap}
     {mapTypeSelector}
     {buttonrow}
     {avirtlist} 
+
+    <Text>Total Distance: {calculateTotalDistance()} meters</Text>
+
     <DialogInput isDialogVisible={ashowme} 
         title="Enter Address"
         message="Enter The Address To Add"
