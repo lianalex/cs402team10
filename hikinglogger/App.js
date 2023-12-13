@@ -9,6 +9,7 @@ import {useWindowDimensions} from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import Geocoder from 'react-native-geocoding'
 import ImagePicker from 'react-native-image-picker';
+import { Polyline } from 'react-native-maps';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,6 +64,12 @@ const MapList = () => {
 
     const getItemCount = (data) => list.length;
     const getItem = (data, index) => (list[index]);
+
+    // add start and end markers
+    const [startMarker, setStartMarker] = useState(null);
+    const [endMarker, setEndMarker] = useState(null);
+
+    const [hikePath, setHikePath] = useState([]);
 
     useEffect(() => {
    
@@ -165,6 +172,22 @@ const MapList = () => {
 
     }
 
+    const handleLongPress = (event) => {
+      const { latitude, longitude } = event.nativeEvent.coordinate;
+
+      // if no start marker, add one, otherwise add end marker
+      if (!startMarker) {
+        setStartMarker({ latitude, longitude });
+      } else if (!endMarker) {
+        setEndMarker({ latitude, longitude });
+      } else {
+        // both markers already exist, so clear them and add new start marker
+        setStartMarker({ latitude, longitude });
+        setEndMarker(null);
+      }
+    };
+    
+
    var buttonrow = <View style={styles.rowblock} >
               <View style={styles.buttonContainer}>
                <Button style={styles.item} title="+" onPress={() => plusButton()}  />
@@ -192,9 +215,37 @@ const MapList = () => {
     smaps = {width: SCREEN_WIDTH, height: SCREEN_HEIGHT}
 
   }
-  var mymap=<MapView ref={mapref} style={smaps} >
-             {markers} 
-            </MapView >
+  // updated MapView to handle long presses and render markers
+  var mymap = (
+    <MapView
+        ref={mapref}
+        style={smaps}
+        onLongPress={handleLongPress} 
+    >
+        {startMarker && (
+            <Marker
+                coordinate={startMarker}
+                title={"Start"}
+                pinColor={"green"} // green pin to indicate start
+            />
+        )}
+        {endMarker && (
+            <Marker
+                coordinate={endMarker}
+                title={"End"}
+                pinColor={"red"} // a red pin to indicate end
+            />
+        )}
+        {startMarker && endMarker && (
+            <Polyline
+                coordinates={[startMarker, endMarker]}
+                strokeColor={"#000"}
+                strokeWidth={6}
+            />
+        )}
+        {markers}
+    </MapView>
+  );
 
    var alist=<View style={styles.container} >
       {mymap}
