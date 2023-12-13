@@ -8,6 +8,7 @@ import {Marker} from 'react-native-maps';
 import {useWindowDimensions} from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import Geocoder from 'react-native-geocoding'
+import ImagePicker from 'react-native-image-picker';
 import { Polyline } from 'react-native-maps';
 
 const styles = StyleSheet.create({
