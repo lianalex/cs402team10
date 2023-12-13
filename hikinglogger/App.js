@@ -9,6 +9,7 @@ import {useWindowDimensions} from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import Geocoder from 'react-native-geocoding'
 import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-picker';
 import { Polyline } from 'react-native-maps';
 
 const styles = StyleSheet.create({
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     width: 300,
     padding: 5,
     borderWidth: 0,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   buttonContainer: {
       flex: 1,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderWidth: 5,
       padding: 0,
-      paddingTop: 0
+      paddingTop: 0,
   },
    
   map:  {width: Dimensions.get('window').width, height: Dimensions.get('window').height/2},
@@ -105,7 +106,7 @@ const MapList = () => {
 			location = json.results[0].geometry.location;
 			console.log(location);
 		    console.log(location);
-            var newList = [{key: alocation, selected: false, longitude: location.lng, latitude: location.lat }]
+            var newList = [{key: alocation, description: "", selected: false, longitude: location.lng, latitude: location.lat }]
       var amark = <Marker
                         coordinate={{latitude: location.lat, longitude: location.lng}}
                                   title={alocation}
@@ -128,21 +129,6 @@ const MapList = () => {
            newList.push(item);
          }
       })
-      setlist(newList);
-    }
-
-    function explodeButton() {
-      const newList = [];
-      list.forEach((item) =>
-      {
-           newList.push(item);
-      })
-
-      for (var i =0; i < 10000; i++) {
-        var anum = Math.random().toString(10).substring(0);
-       var newitem = {key: 'obo '+anum, selected: false};
-       newList.push(newitem);
-     }
       setlist(newList);
     }
  
@@ -296,6 +282,8 @@ const MapList = () => {
     {mapTypeSelector}
     {mymap}
     </View>
+
+  
 
   if (SCREEN_WIDTH > SCREEN_HEIGHT)
   {
