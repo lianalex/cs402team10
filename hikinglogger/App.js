@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
    paddingTop: 2,
    borderWidth: 5,
   },
-  
   rowblock: {
     height: 80,
     width: 300,
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
-      borderWidth: 5,
+      borderWidth: 0,
       padding: 0,
       paddingTop: 0,
   },
@@ -79,19 +78,19 @@ const MapList = () => {
       if (list.length == 0)
       {
         var urladdress = "https://cs.boisestate.edu/~scutchin/cs402/codesnips/loadjson.php?user=tommytrov"
-        const response = loadList(urladdress,list,setlist,setMarks)
+        const response = loadList(urladdress,waypoints,setWaypoints,setMarks)
       }
      
     }, [list])
 
     function loadButton() {
         var urladdress = "https://cs.boisestate.edu/~scutchin/cs402/codesnips/loadjson.php?user=tommytrov"
-        const response = loadList(urladdress,list,setlist,setMarks)
+        const response = loadList(urladdress,waypoints,setWaypoints,setMarks)
     }
 
     function saveButton() {
         var urladdress = "https://cs.boisestate.edu/~scutchin/cs402/codesnips/savejson.php?user=tommytrov"
-        const response = saveList(urladdress,list)
+        const response = saveList(urladdress,waypoints)
     }
 
     function plusButton() {
@@ -126,7 +125,7 @@ const MapList = () => {
 
     function delButton() {
       const newList = [];
-      list.forEach((item) =>
+      waypoints.forEach((item) =>
       {
          if (!item.selected) {
            newList.push(item);
@@ -256,6 +255,7 @@ const MapList = () => {
         coordinate={waypoint}
         title={`Waypoint ${index + 1}`}
       />
+      
     ))}
     {waypoints.length > 1 && (
       <Polyline
@@ -293,9 +293,9 @@ const MapList = () => {
         submitInput={ (inputText) =>{setshowme(false); addLocation(inputText)}}
         closeDialog={() => {setshowme(false)}}
         >
-    <Text>Something</Text>
+      <Text>Something</Text>
     </DialogInput>
-    </View>
+  </View>
 
   var ablist=<View style={styles.bcontainer} >
     <View >

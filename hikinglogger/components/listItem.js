@@ -1,18 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { VirtualizedList, TouchableOpacity, Button, FlatList, StyleSheet, Text, View, Modal, TextInput } from 'react-native';
-const itemstyles = StyleSheet.create({
-  item: {
-    padding: 10,
-    fontSize: 12,
-    height: 44,
-  },
-  title: {
-    fontSize: 22,
-  },
-});
-
-
 
 const Item = ({ item, onPress, backgroundColor, textColor }) => {
   const [modalVisible, setModalVisible] = useState(false);

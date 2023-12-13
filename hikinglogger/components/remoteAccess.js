@@ -12,22 +12,14 @@ async function loadList(aurl,alist,asetlist,asetm) {
      alist.push(item)
      console.log(item);
   })
-
- var blist = <Marker
-            coordinate={{latitude: 44.78825,
-            longitude: -122.4324}}
-            title={"title"}
-            description={"description"}
-         />
-  
-  
+ 
    const newList = alist.map((item) => {return item})
 
    const mList = alist.map((item) => {
       var newm = <Marker
         coordinate={{latitude: item.latitude, longitude: item.longitude}}
         title={item.key}
-        description={"Airport"}
+        description={""}
                   />
       return newm})
    asetlist(newList);
