@@ -64,11 +64,11 @@ const MapList = () => {
     const getItemCount = (data) => list.length;
     const getItem = (data, index) => (list[index]);
 
-    // add start and end markers
-    const [startMarker, setStartMarker] = useState(null);
-    const [endMarker, setEndMarker] = useState(null);
-
     const [hikePath, setHikePath] = useState([]);
+    const [waypoints, setWaypoints] = useState([]);
+
+    const [mapType, setMapType] = useState('standard');
+
 
     useEffect(() => {
    
@@ -186,19 +186,18 @@ const MapList = () => {
 
     }
 
+    const addWaypoint = (coordinate) => {
+      setWaypoints(currentWaypoints => [...currentWaypoints, coordinate]);
+    };
+
+    const removeLastWaypoint = () => {
+      setWaypoints(currentWaypoints => [...currentWaypoints.slice(0, -1)]);
+    }
+
     const handleLongPress = (event) => {
       const { latitude, longitude } = event.nativeEvent.coordinate;
+      addWaypoint({ latitude, longitude });
 
-      // if no start marker, add one, otherwise add end marker
-      if (!startMarker) {
-        setStartMarker({ latitude, longitude });
-      } else if (!endMarker) {
-        setEndMarker({ latitude, longitude });
-      } else {
-        // both markers already exist, so clear them and add new start marker
-        setStartMarker({ latitude, longitude });
-        setEndMarker(null);
-      }
     };
     
 
@@ -209,6 +208,7 @@ const MapList = () => {
               <Button title="Load" onPress={() => loadButton()}/>
               <Button title="Save" onPress={() => saveButton()}/>
               <Button title="Auto" onPress={() => setnav(!autonav)}/>
+              <Button title="Remove Waypoint" onPress={() => removeLastWaypoint()}/>
               </View>
               </View>
 
@@ -233,70 +233,75 @@ const MapList = () => {
   // updated MapView to handle long presses and render markers
   var mymap = (
     <MapView
+        mapType={mapType}
         ref={mapref}
         style={smaps}
         onLongPress={handleLongPress} 
     >
-        {startMarker && (
-            <Marker
-                coordinate={startMarker}
-                title={"Start"}
-                pinColor={"green"} // green pin to indicate start
-            />
-        )}
-        {endMarker && (
-            <Marker
-                coordinate={endMarker}
-                title={"End"}
-                pinColor={"red"} // a red pin to indicate end
-            />
-        )}
-        {startMarker && endMarker && (
-            <Polyline
-                coordinates={[startMarker, endMarker]}
-                strokeColor={"#000"}
-                strokeWidth={6}
-            />
-        )}
-        {markers}
-    </MapView>
+    {waypoints.map((waypoint, index) => (
+      <Marker
+        key={index}
+        coordinate={waypoint}
+        title={`Waypoint ${index + 1}`}
+      />
+    ))}
+    {waypoints.length > 1 && (
+      <Polyline
+        coordinates={waypoints}
+        strokeColor="#000"
+        strokeWidth={6}
+      />
+    )}
+  </MapView>
   );
 
-   var alist=<View style={styles.container} >
-      {mymap}
-     {buttonrow}
-      {avirtlist} 
-      <DialogInput isDialogVisible={ashowme} 
-          title="Enter Address"
-          message="Enter The Address To Add"
-          submitInput={ (inputText) =>{setshowme(false); addLocation(inputText)}}
-          closeDialog={() => {setshowme(false)}}
-          >
-      <Text>Something</Text>
-      </DialogInput>
-      </View>
+  var mapTypeSelector = (
+    <View style={styles.buttonContainer}>
+      <Button title="Standard" onPress={() => setMapType('standard')} />
+      <Button title="Satellite" onPress={() => setMapType('satellite')} />
+      <Button title="Hybrid" onPress={() => setMapType('hybrid')} />
+      <Button title="Terrain" onPress={() => setMapType('terrain')} />
+    </View>
+  );
 
-   var ablist=<View style={styles.bcontainer} >
-     <View >
-     {buttonrow}
-      {avirtlist} 
-      <DialogInput isDialogVisible={ashowme} 
-          title="Enter Address"
-          message="Enter The Address To Add"
-          submitInput={ (inputText) =>{setshowme(false); addLocation(inputText)}}
-          closeDialog={() => {setshowme(false)}}
-          >
-      <Text>Something</Text>
-      </DialogInput>
-      </View >
-      {mymap}
-      </View>
+  var alist=<View style={styles.container} >
+    {mymap}
+    {mapTypeSelector}
+    {buttonrow}
+    {avirtlist} 
+    <DialogInput isDialogVisible={ashowme} 
+        title="Enter Address"
+        message="Enter The Address To Add"
+        submitInput={ (inputText) =>{setshowme(false); addLocation(inputText)}}
+        closeDialog={() => {setshowme(false)}}
+        >
+    <Text>Something</Text>
+    </DialogInput>
+    </View>
+
+  var ablist=<View style={styles.bcontainer} >
+    <View >
+    {buttonrow}
+    {avirtlist}     
+    <DialogInput isDialogVisible={ashowme} 
+        title="Enter Address"
+        message="Enter The Address To Add"
+        submitInput={ (inputText) =>{setshowme(false); addLocation(inputText)}}
+        closeDialog={() => {setshowme(false)}}
+        >
+    <Text>Something</Text>
+    </DialogInput>
+    </View >
+    {mapTypeSelector}
+    {mymap}
+    </View>
 
   if (SCREEN_WIDTH > SCREEN_HEIGHT)
   {
     return ablist;
   }    
   return (alist)
+  
  
 }
 
