@@ -218,7 +218,7 @@ const MapList = () => {
                <Button title="-" onPress={() => delButton()}/>
               <Button title="Load" onPress={() => loadButton()}/>
               <Button title="Save" onPress={() => saveButton()}/>
-              <Button title="Auto" onPress={() => setnav(!autonav)}/>
+              {/* <Button title="Auto" onPress={() => setnav(!autonav)}/> */}
               <Button title="Remove Waypoint" onPress={() => removeLastWaypoint()}/>
               </View>
               </View>
