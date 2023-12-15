@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 
 
 var emptydata = [];
-Geocoder.init("AIzaSyDqW8jK0xxnIRKTKXACxIK-q3UerQTiCsA");
+Geocoder.init("");
 
 const MapList = () => {
 
@@ -192,7 +192,7 @@ const MapList = () => {
     };
 
     const fetchWeatherData = async (latitude, longitude) => {
-      const apiKey = 'f343d437230cb3005ad46c6ff9e845b6';
+      const apiKey = '';
       const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
       
       try {
